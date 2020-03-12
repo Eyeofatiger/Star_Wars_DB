@@ -1,25 +1,26 @@
 import React, { Component } from 'react';
-import SwapiService from '../../services/swapiService';
 import './ItemList.css';
+import Spinner from '../spinner/spinner';
 
 export default class ItemList extends Component {
   constructor(){
     super();
 
     this.state = {
-      peopleList: null,
+      itemList: null,
       error: false,
       loading: true
     };
-
-    this.swapiService = new SwapiService();
   };
 
   componentDidMount(){
-    this.swapiService.getAllPeople()
-        .then((peopleList)=> {
+
+    const { getData } = this.props;
+
+    getData()
+        .then((itemList)=> {
           this.setState({
-            peopleList
+            itemList
           });
         }).catch(this.onError);
   };
@@ -31,18 +32,34 @@ export default class ItemList extends Component {
     });
   };
 
+  renderItems = (arr)=> {
+    return arr.map((item)=>{
+      const {id} = item;
+      const label = this.props.renderItem(item)
+
+      return(
+        <li className="list-group-item"
+            key={id}
+            onClick={()=>{this.props.onItemSelected(id)}}>
+          {label}
+        </li>
+      );
+    });
+  };
+
   render() {
+
+    const {itemList} = this.state;
+
+    if(!itemList){
+      return <Spinner />;
+    }
+
+    const items = this.renderItems(itemList);
+
     return (
       <ul className="item-list list-group">
-        <li className="list-group-item">
-          Luke Skywalker
-        </li>
-        <li className="list-group-item">
-          Darth Vader
-        </li>
-        <li className="list-group-item">
-          R2-D2
-        </li>
+        {items}
       </ul>
     );
   }
