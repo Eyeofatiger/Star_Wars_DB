@@ -49,10 +49,9 @@ export default class RandomPlanet extends Component {
   };
 
   render() {
-    const{ togglePlanet } = this.props;
 
     const {planet, loading, error} = this.state;
-    const hasData = !(loading || togglePlanet || error);
+    const hasData = !(loading || error);
     const errorMessage = error ? <ErrorIndicator /> : null;
     const spinner = loading ? <Spinner /> : null;
     const content = hasData ? <PlanetView planet={planet} /> : null;
