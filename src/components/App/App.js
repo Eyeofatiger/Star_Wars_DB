@@ -2,12 +2,16 @@ import React from 'react';
 import './App.css';
 import Header from '../header/Header';
 import RandomPlanet from '../randomPlanet/RandomPlanet';
-import {PersonList, PlanetList, StarshipList} from '../sw-components/allItemLists';
-import PersonDetails from '../sw-components/PersonDetails';
-import PlanetDetails from '../sw-components/PlanetDetails';
-import StarshipDetails from '../sw-components/StarshipsDetails';
 import SwapiService from '../../services/swapiService';
 import {SwapiServiceProvider} from '../sw-service-context/sw-service-context';
+import PeoplePage from '../pages/peoplePage';
+import PlanetPage from '../pages/planetPage';
+import StarshipPage from '../pages/starshipPage';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import StarshipsDetails from '../sw-components/StarshipsDetails';
+import SecretPage from '../pages/secretPage';
+import LoginPage from '../pages/loginPage';
+
 
 export default class App extends React.Component {
 
@@ -16,49 +20,33 @@ export default class App extends React.Component {
 
     this.state = {
       showRandomPlanet: true,
-      selectedPerson: null,
+      isLoggedIn: false
     };
 
     this.swapiService = new SwapiService();
   };
 
-  onItemSelected = (id)=> {
-    this.setState({
-      selectedPerson: id
-    });
-  }
-
   render(){
-  return (
-    <div>
-      <SwapiServiceProvider value={this.swapiService}>
-        <Header />
-        <RandomPlanet />
-        <div className="row mt-3 body-block">
-          <div className="col-md-6">
-            <PersonList onItemSelected={this.onItemSelected} />
-          </div>
-          <div className="col-md-6">
-            <PersonDetails itemId={11} />
-          </div>
-        </div>
-        <div className="row mt-3 body-block">
-          <div className="col-md-6">
-            <PlanetList onItemSelected={this.onItemSelected} />
-          </div>
-          <div className="col-md-6">
-            <PlanetDetails itemId={11} />
-          </div>
-        </div>
-        <div className="row mt-3 body-block">
-          <div className="col-md-6">
-            <StarshipList onItemSelected={this.onItemSelected} />
-          </div>
-          <div className="col-md-6">
-            <StarshipDetails itemId={10} />
-          </div>
-        </div>
-      </SwapiServiceProvider>
-    </div>
-  );}
+    return (
+      <div>
+        <SwapiServiceProvider value={this.swapiService}>
+          <BrowserRouter>
+            <Header />
+            <RandomPlanet />
+            <Switch>
+              <Route path="/" exact render={()=> <h2 className="ml-3">Welcom to StarDB!!!</h2>} />
+              <Route path="/people/:id?" component={PeoplePage} />
+              <Route path="/planet" component={PlanetPage} />
+              <Route path="/starship" exact component={StarshipPage} />
+              <Route path="/starship/:id" render={({match})=> <StarshipsDetails itemId={match.params.id} />} />
+              <Route path="/secret/" render={()=><SecretPage isLoggedIn={this.state.isLoggedIn} />} />
+              <Route path="/login" render={()=> <LoginPage isLoggedIn={this.state.isLoggedIn} 
+                                                          onLogin={()=>{this.setState({isLoggedIn: true})}} />} />
+              <Redirect to="/" />
+            </Switch>
+          </BrowserRouter>
+        </SwapiServiceProvider>
+      </div>
+    );
+  }
 };

@@ -74,8 +74,6 @@ export default class ItemDetails extends Component {
 }
 
 const PersonView = ({item, image, prop})=> {
-
-  const { name } = item;
   
   return(
     <React.Fragment>
@@ -83,7 +81,7 @@ const PersonView = ({item, image, prop})=> {
       src={image} alt="char" />
 
       <div className="card-body">
-        <h4>{name}</h4>
+        <h4>{item.name}</h4>
         <ul className="list-group list-group-flush">
           { React.Children.map(prop, (child)=>{
             return React.cloneElement(child, { item });
